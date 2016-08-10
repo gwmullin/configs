@@ -43,8 +43,8 @@ Plugin 'scrooloose/syntastic'
 ""Plugin 'klen/python-mode'
 
 call vundle#end()
-"" This worked better off.
-"filetype plugin indent on
+"" This maybe worked better off.
+filetype plugin indent on
 
 "" YCM
 let g:ycm_autoclose_preview_window_after_completion=1
@@ -222,4 +222,6 @@ if !empty(glob("$HOME/.vimrc-local"))
   source $HOME/.vimrc-local
 endif
 
+"" WTF is going on here. Jedi somehow resets these...
+autocmd BufReadPost *.py :set sw=2 sts=2 ts=2
 

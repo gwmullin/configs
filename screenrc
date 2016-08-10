@@ -1,0 +1,17 @@
+startup_message off 
+defscrollback 50000
+altscreen on
+
+hardstatus alwayslastline
+hardstatus string '%{gk}[ %{G}%S %{g}][%= %{wk}%?%-Lw%?%{=b kR} (%{W}%n*%f %t%?(%u)%?%{=b kR})%{= kw}%?%+Lw%?%?%= %{g}][%{Y}%l%{g}] %{=b C}[ %m/%d %c ]%{W}'
+
+# Hide hardstatus: ctrl-a f
+bind f eval "hardstatus ignore"
+
+# # Show hardstatus: ctrl-a F
+bind F eval "hardstatus alwayslastline"
+
+term "screen-256color"
+bell_msg ''
+vbell off
+

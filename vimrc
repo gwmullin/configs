@@ -39,9 +39,6 @@ Plugin 'scrooloose/syntastic'
 "Plugin 'tmhedberg/SimpylFold'
 
 
-"" jedi-vim worked out much better than this
-""Plugin 'klen/python-mode'
-
 call vundle#end()
 "" This maybe worked better off.
 filetype plugin indent on
@@ -49,10 +46,21 @@ filetype plugin indent on
 "" YCM
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
-"" Jedi is better for python, so blacklist it for YCM here.
-let g:ycm_filetype_blacklist = {
-        \ 'python' : 1,
-        \ }
+
+"" If you want to try jedi autocomplete rather than YCM, uncomment below.
+""let g:ycm_filetype_blacklist = {
+""        \ 'python' : 1,
+""        \ }
+
+"" Jedi-vim
+"" Turn off jedi-vim autocomplete in favor of YCM
+let g:jedi#completions_enabled=0
+"" But get awesome call signatures
+let g:jedi#show_call_signatures=1
+"" https://github.com/Valloric/YouCompleteMe/issues/1890
+let g:jedi#show_call_signatures_delay=0
+"" re-init jedi call sig
+call jedi#configure_call_signatures()
 
 "" Hot Key to activate Tagbar
 nmap <leader>t :TagbarToggle<CR>
@@ -142,9 +150,6 @@ hi StatusLine   ctermfg=48 guifg=#ffffff ctermbg=240 guibg=#4e4e4e cterm=bold gu
 hi StatusLineNC ctermfg=0 guifg=#b3b2b2 ctermbg=240 guibg=#3a3a3a cterm=none gui=none
 "" Useful vertical split colorings
 hi VertSplit ctermfg=6 guifg=#b2b2b2 ctermbg=7 guibg=#3a3a3a cterm=none gui=none
-
-"" Bring in googley paths
-set path+=/usr/share/vim/google/google-filetypes/syntax
 
 "" Always display last status line
 set laststatus=2

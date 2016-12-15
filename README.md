@@ -7,9 +7,11 @@ I've discovered plugins that I especially like, and some I especially don't. I c
 To Install:
 
 1. git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-2. Copy the vimrc to ~/.vimrc. Launch `vim` and run `:PluginInstall`
-3. Do some plugin-specific setup
+2. Copy the vimrc to ~/.vimrc.
+3. `vim +PluginInstall +qall`
+4. Do some plugin-specific setup
   1. YouCompleteMe
+    - `sudo apt-get install libclang-dev cmake build-essential python-dev python3-dev`
     - `cd ~/.vim/bundle/YouCompleteMe`
     - `./install.py --clang-completer`
   2. jedi-vim

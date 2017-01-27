@@ -1,4 +1,5 @@
 set nocompatible
+set t_Co=256
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -27,18 +28,78 @@ Plugin 'davidhalter/jedi-vim'
 "" GoLang, yo!
 Plugin 'fatih/vim-go'
 
-"" This wound up being annoying but useful:
+"" I do specific pylint options that make this more bearable
 Plugin 'scrooloose/syntastic'
-"
+
+"" Embrace the airline after so much time...
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+
+Plugin 'bling/vim-bufferline'
+
+Plugin 'vim-scripts/diffchar.vim'
+
 "" Things I don't really like:
-"Plugin 'vim-airline/vim-airline-themes'
 "Plugin 'tmhedberg/SimpylFold'
+"Plugin 'edkolev/tmuxline.vim'
 
 "" jedi-vim worked out much better than this
 ""Plugin 'klen/python-mode'
 
-Plugin 'vim-scripts/diffchar.vim'
 call vundle#end()
+
+
+"" Turn off tmux airline when entering vim
+autocmd VimEnter * silent !tmux set status off
+"" Turn off tmux airline when exiting vim
+autocmd VimLeave * silent !tmux set status on
+
+"" All my file encodings are pretty much the same, I don't need that info.
+let g:airline_section_y = ''
+
+"" I don't really like wordcount displayed
+let g:airline#extensions#wordcount#enabled = 0
+
+"" You'll need powerline patched fonts for this part
+let g:airline_powerline_fonts = 1
+
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+"" Just a little tweak to make my life better
+let g:airline_symbols.maxlinenr = ''
+
+"" Alternatively you can specify custom symbols below.
+"let g:airline_left_sep = '»'
+"let g:airline_left_sep = ''
+"let g:airline_right_sep = '«'
+"let g:airline_right_sep = ''
+"let g:airline_symbols.crypt = '🔒 '
+"let g:airline_symbols.linenr = '␊'
+"let g:airline_symbols.linenr = '␤'
+"let g:airline_symbols.linenr = '¶'
+"let g:airline_symbols.maxlinenr = '☰'
+"let g:airline_symbols.maxlinenr = ''
+"let g:airline_symbols.branch = '⎇'
+"let g:airline_symbols.paste = 'ρ'
+"let g:airline_symbols.paste = 'Þ'
+"let g:airline_symbols.paste = '∥'
+"let g:airline_symbols.spell = 'Ꞩ'
+"let g:airline_symbols.notexists = '∄'
+"let g:airline_symbols.whitespace = 'Ξ'
+
+""Airline Theme spec
+"let g:airline_solarized_bg="dark"
+"let g:airline_theme='solarized'
+
+""" old vim-powerline symbols
+""let g:airline_left_sep = '⮀'
+""let g:airline_left_alt_sep = '⮁'
+""let g:airline_right_sep = '⮂'
+""let g:airline_right_alt_sep = '⮃'
+""let g:airline_symbols.branch = '⭠'
+""let g:airline_symbols.readonly = '⭤'
+""let g:airline_symbols.linenr = '⭡'
 
 "" YCM
 let g:ycm_autoclose_preview_window_after_completion=1
@@ -49,9 +110,7 @@ map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 let g:jedi#completions_enabled=0
 "" But get awesome call signatures
 let g:jedi#show_call_signatures=1
-"" https://github.com/Valloric/YouCompleteMe/issues/1890
 let g:jedi#show_call_signatures_delay=0
-"" re-init jedi call sig
 call jedi#configure_call_signatures()
 
 "" Hot Key to activate Tagbar
@@ -103,25 +162,36 @@ let g:tagbar_type_go = {
 
 
 """ Syntastic
+"highlight SyntasticError ctermbg=168
+highlight SyntasticWarning ctermbg=168
+highlight SyntasticWarningLine ctermbg=52
+highlight SyntasticErrorLine ctermbg=52
+highlight SyntasticStyleErrorLine ctermbg=52
+highlight SyntasticStyleWarningLine ctermbg=52
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
-let g:syntastic_mode_map = {
-  \ "mode": "active",
-  \ "passive_filetypes": ["python"] }
+let g:syntastic_enable_signs = 0
+let g:syntastic_enable_highlighting = 1
+let g:syntastic_enable_balloons = 1
+
+"" If you want to place syntastic in passive mode, here's how
+"let g:syntastic_mode_map = {
+"  \ "mode": "active",
+"  \ "passive_filetypes": ["python"] }
 
 "" Hot Key to force syntax check
 nmap <leader>x :SyntasticCheck<CR>
 
-"" Standard VIM things below.
 
-"" Enable folding - I HATE FOLDING
+"" Standard VIM things (non-plugin) below.
+
+"" Disable folding - I HATE FOLDING
 "set foldmethod=indent
 "set foldlevel=99
 "" Enable folding with the spacebar
 "nnoremap <space> za
-
 
 "" Tab between buffers
 noremap <tab> :bnext<CR>
@@ -148,29 +218,34 @@ hi StatusLineNC ctermfg=0 guifg=#b3b2b2 ctermbg=240 guibg=#3a3a3a cterm=none gui
 "" Useful vertical split colorings
 hi VertSplit ctermfg=6 guifg=#b2b2b2 ctermbg=7 guibg=#3a3a3a cterm=none gui=none
 
+"" Alternative paren matching colors
 hi MatchParen cterm=bold ctermbg=none ctermfg=164
 
-"" Always display last status line
-set laststatus=2
+"" Old status line configs. I use vim-airline for this now.
+""" "" Always display last status line
+""" set laststatus=2
+""" 
+""" set statusline=   " clear the statusline for when vimrc is reloaded
+""" set statusline+=%-3.3n\                      " buffer number
+""" set statusline+=%f\                          " file name
+""" set statusline+=%h%m%r%w                     " flags
+""" set statusline+=[%{strlen(&ft)?&ft:'none'},  " filetype
+""" set statusline+=%{strlen(&fenc)?&fenc:&enc}, " encoding
+""" set statusline+=%{&fileformat}]              " file format
+""" set statusline+=%=                           " right align
+""" set statusline+=%{synIDattr(synID(line('.'),col('.'),1),'name')}\  " highlight
+""" set statusline+=%b,0x%-8B\                   " current char
+""" set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
+""" 
+""" "" Change the status line based on mode
+""" "" Status line when in 'insert' mode
+""" au InsertEnter * hi StatusLine ctermbg=52 ctermfg=15 cterm=none gui=undercurl guisp=Magenta
+""" 
+""" "" Status line when leaving 'insert' mode
+""" au InsertLeave * hi StatusLine ctermfg=48 ctermbg=240 cterm=bold gui=bold,reverse
 
-set statusline=   " clear the statusline for when vimrc is reloaded
-set statusline+=%-3.3n\                      " buffer number
-set statusline+=%f\                          " file name
-set statusline+=%h%m%r%w                     " flags
-set statusline+=[%{strlen(&ft)?&ft:'none'},  " filetype
-set statusline+=%{strlen(&fenc)?&fenc:&enc}, " encoding
-set statusline+=%{&fileformat}]              " file format
-set statusline+=%=                           " right align
-set statusline+=%{synIDattr(synID(line('.'),col('.'),1),'name')}\  " highlight
-set statusline+=%b,0x%-8B\                   " current char
-set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
 
-"" Change the status line based on mode
-"" Status line when in 'insert' mode
-au InsertEnter * hi StatusLine ctermbg=52 ctermfg=15 cterm=none gui=undercurl guisp=Magenta
-
-"" Status line when leaving 'insert' mode
-au InsertLeave * hi StatusLine ctermfg=48 ctermbg=240 cterm=bold gui=bold,reverse
+"" Line length highlighting over 80 char
 highlight rightMargin term=bold ctermfg=magenta guifg=magenta
 "" Don't highlight the motherfucking go files line length
 if empty(matchstr(expand('%:t'), '.go'))
@@ -206,6 +281,7 @@ set modelines=10
 if !empty(glob("$HOME/.vimrc-local"))
   source $HOME/.vimrc-local
 endif
+
 "" Convert tabs to spaces
 set expandtab
 
@@ -389,5 +465,4 @@ endfunction
 "}}}
 
 let &cpo = s:save_cpo
-
 

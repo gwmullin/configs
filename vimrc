@@ -48,11 +48,12 @@ Plugin 'vim-scripts/diffchar.vim'
 
 call vundle#end()
 
-
-"" Turn off tmux airline when entering vim
-autocmd VimEnter * silent !tmux set status off
-"" Turn off tmux airline when exiting vim
-autocmd VimLeave * silent !tmux set status on
+if !empty($TMUX)
+  "" Turn off tmux airline when entering vim
+  autocmd VimEnter * silent !tmux set status off
+  "" Turn off tmux airline when exiting vim
+  autocmd VimLeave * silent !tmux set status on
+endif
 
 "" All my file encodings are pretty much the same, I don't need that info.
 let g:airline_section_y = ''

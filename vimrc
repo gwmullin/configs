@@ -14,7 +14,7 @@ Plugin 'majutsushi/tagbar'
 Plugin 'scrooloose/nerdtree'
 
 "" Intelligent buffer management.
-Plugin 'qpkorr/vim-bufkill'
+"Plugin 'qpkorr/vim-bufkill'
 
 "" Highlight indenting for when you need it.
 Plugin 'nathanaelkane/vim-indent-guides'
@@ -39,21 +39,27 @@ Plugin 'bling/vim-bufferline'
 
 Plugin 'vim-scripts/diffchar.vim'
 
+Plugin 'google/vim-searchindex'
+
 "" Things I don't really like:
 "Plugin 'tmhedberg/SimpylFold'
-"Plugin 'edkolev/tmuxline.vim'
+""Plugin 'edkolev/tmuxline.vim'
 
 "" jedi-vim worked out much better than this
 ""Plugin 'klen/python-mode'
 
 call vundle#end()
 
-if !empty($TMUX)
-  "" Turn off tmux airline when entering vim
-  autocmd VimEnter * silent !tmux set status off
-  "" Turn off tmux airline when exiting vim
-  autocmd VimLeave * silent !tmux set status on
-endif
+""""if !empty($TMUX)
+""""  "" Turn off tmux airline when entering vim
+""""  autocmd VimEnter * silent !tmux set status off
+""""  "" Turn off tmux airline when exiting vim
+""""  autocmd VimLeave * silent !tmux set status on
+""""endif
+
+"" Always show airline status bar
+set laststatus=2
+
 
 "" All my file encodings are pretty much the same, I don't need that info.
 let g:airline_section_y = ''
@@ -162,6 +168,9 @@ let g:tagbar_type_go = {
 \ }
 
 
+""" Gentle search highlighting
+hi Search ctermbg=28
+
 """ Syntastic
 "highlight SyntasticError ctermbg=168
 highlight SyntasticWarning ctermbg=168
@@ -178,9 +187,9 @@ let g:syntastic_enable_highlighting = 1
 let g:syntastic_enable_balloons = 1
 
 "" If you want to place syntastic in passive mode, here's how
-"let g:syntastic_mode_map = {
-"  \ "mode": "active",
-"  \ "passive_filetypes": ["python"] }
+let g:syntastic_mode_map = {
+  \ "mode": "active",
+  \ "passive_filetypes": ["python"] }
 
 "" Hot Key to force syntax check
 nmap <leader>x :SyntasticCheck<CR>
@@ -247,7 +256,7 @@ hi MatchParen cterm=bold ctermbg=none ctermfg=164
 
 
 "" Line length highlighting over 80 char
-highlight rightMargin term=bold ctermfg=magenta guifg=magenta
+highlight rightMargin term=bold ctermfg=164 guifg=#4e4e4e
 "" Don't highlight the motherfucking go files line length
 if empty(matchstr(expand('%:t'), '.go'))
   "" Don't highlight the motherfucking cfg files line length
@@ -272,8 +281,12 @@ syntax enable
 
 "" Strip trailing whitespace from py files.
 autocmd BufWritePre *.py :%s/\s\+$//e
+autocmd BufWritePre *.html :%s/\s\+$//e
 set modeline
 set modelines=10
+
+"" Padding on top and bottom for search results
+set scrolloff=20
 
 "" Try as I might, I keep not liking mouse mode.
 "set mouse=n 
@@ -306,6 +319,11 @@ set infercase
 
 set splitbelow
 set splitright
+
+set hlsearch
+
+"" Clear search highlighting with a mapped key
+nnoremap <C-Esc> :let @/ = "" <Esc>
 
 "" WTF is going on here. Jedi somehow resets these...
 autocmd BufReadPost *.py :set sw=2 sts=2 ts=2

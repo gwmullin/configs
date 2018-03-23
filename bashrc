@@ -116,7 +116,7 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 # bash completion (already enabled in /etc/bash.bashrc in most distros
-if [ -f /etc/bash_completion] && ! shopt -oq posix; then
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
   . /etc/bash_completion
 fi
 

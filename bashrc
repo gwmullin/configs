@@ -2,12 +2,19 @@
 TERM=xterm-256color
 
 # Don't do anything if non-interactive
-[ -z "$PS1" ] && return 
+[ -z "$PS1" ] && return
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
 
 function my_diff {
   if [ -x /usr/bin/wdiff ]; then
     if [ -x /usr/bin/colordiff ]; then
       /usr/bin/wdiff $1 $2 | /usr/bin/colordiff -U 6
+    else
+      /usr/bin/wdiff $1 $2
     fi
   else
     if [ -x /usr/bin/diff ]; then
@@ -18,6 +25,7 @@ function my_diff {
   fi
 }
 
+# Change to the absolute destination dir (dereference symlinks)
 function ccd {
   pushd . > /dev/null 2>&1
   if [ -x $1 ]; then
@@ -38,15 +46,35 @@ function setWindowTitle {
   fi
 }
 
+function reload {
+  source ~/.bashrc
+}
+
+# A wrapper around vim, setting tmux window name
+function vim {
+  if [[ "$TMUX" != "" ]]; then
+    tmux rename-window "vim"
+  fi
+  # I have a wrapper script around vim to set python path, etc.
+  if [ -x ~/my_vim.py ]; then
+    ~/my_vim.py "$@"
+  else
+    vim "$@"
+  fi
+  if [[ "$TMUX" != "" ]]; then
+    tmux set-window-option automatic-rename "on" 1>/dev/null
+  fi
+}
+
 # Better bash history across multiple sessions
-HISTSIZE=100000
+HISTSIZE=200000
 HISTFILESIZE=$(($HISTSIZE * 2))
 HISTCONTROL=ignorespace:ignoredups
 HISTTIMEFORMAT='%F %T '
 
 _bash_history_sync() {
   builtin history -a         #1
-  HISTFILESIZE=$HISTSIZE     #2  
+  HISTFILESIZE=$HISTSIZE     #2
   builtin history -c         #3
   builtin history -r         #4
 }
@@ -79,9 +107,27 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias ls='ls --color=always'
+# I'm always doing this one
+alias Grep='grep --color=auto -H'
+
+# Include any bash aliases
+if [ -f ~/.bash_aliases ]; then
+  . ~/.bash_aliases
+fi
+
+# bash completion (already enabled in /etc/bash.bashrc in most distros
+if [ -f /etc/bash_completion] && ! shopt -oq posix; then
+  . /etc/bash_completion
+fi
 
 # Always forward agent
 alias ssh='ssh -A'
+
+# automatic gopath if present
+if [ -d ~/go ]; then
+  export GOPATH=~/go
+  export PATH=$PATH:~/go/bin
+fi
 
 Black="\[\033[0;30m\]"
 DarkGrey="\[\033[1;30m\]"
@@ -102,4 +148,10 @@ White="\[\033[1;37m\]"
 
 NO_COLOR="\[\033[0m\]"
 
-PS1="$Green[⚡]\t @$Brown\H: $LightGray\W\$ $NO_COLOR"
+PS1="${debian_chroot:+($Purple$debian_chroot$NO_COLOR)}$Green[⚡]\t @$Brown\H: $LightGray\W\$ $NO_COLOR"
+
+# Any overrides you may want can go in ~/.bashrc_local
+if [ -f ~/.bashrc_local ]; then
+  . ~/.bashrc_local
+fi
+

@@ -485,3 +485,6 @@ endfunction
 
 let &cpo = s:save_cpo
 
+"" Allows for macros to 'edit' the file (EG checkout), vim triggers autoreload
+au FocusGained,BufEnter * :checktime
+

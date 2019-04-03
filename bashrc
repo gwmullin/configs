@@ -148,7 +148,37 @@ White="\[\033[1;37m\]"
 
 NO_COLOR="\[\033[0m\]"
 
-PS1="${debian_chroot:+($Purple$debian_chroot$NO_COLOR)}$Green[⚡]\t @$Brown\H: $LightGray\W\$ $NO_COLOR"
+function unset_tmux {
+  if [[ "${TMUX_PANE}" != "" ]]; then
+    tmux setw automatic-rename
+  fi
+}
+
+function set_tmux_window {
+  cname="$(client_name)"
+  if [[ "$cname" != "" ]]; then
+    if [[ "${TMUX_PANE}" != "" ]]; then
+      tmux rename-window -t${TMUX_PANE} $cname
+    fi
+  fi
+}
+
+function set_window_title {
+  TITLEBAR=""
+  local host_name=$(hostname -f)
+  if [[ "${CUSTOM_TITLE}" != "" ]]; then
+    TITLEBAR="\001\033]0;$CUSTOM_TITLE\007\002"
+  else
+    TITLEBAR="\001\033]0;@${host_name}\007\002"
+  fi
+  printf "$TITLEBAR"
+}
+
+### Emit a line of '----' with the current datetime in the center before executing each command
+PS0="\$(unset_tmux)\$(printf -- '-%.s' \$(seq 1 \$((COLUMNS/2-13))) ; echo)  \D{%F %I:%M:%S %p}  \$(printf -- '-%.s' \$(seq 1 \$((COLUMNS/2-13))) ; echo)\n"
+
+### Better PS1 than default. Includes chroot and timestamp in prompt
+PS1="\$(set_tmux_window)\$(set_window_title)${debian_chroot:+($Purple$debian_chroot$NO_COLOR)}$Green[X]\t @$Brown\H: $LightGray\W\$ $NO_COLOR"
 
 # Any overrides you may want can go in ~/.bashrc_local
 if [ -f ~/.bashrc_local ]; then

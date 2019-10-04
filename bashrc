@@ -67,9 +67,9 @@ function vim {
 }
 
 # Better bash history across multiple sessions
-HISTSIZE=200000
-HISTFILESIZE=$(($HISTSIZE * 2))
-HISTCONTROL=ignorespace:ignoredups
+HISTSIZE=2000000
+HISTFILESIZE=$(($HISTSIZE * 4))
+HISTCONTROL="ignorespace:ignoredups:ls:clear:reset:g4 status"
 HISTTIMEFORMAT='%F %T '
 
 _bash_history_sync() {
@@ -100,7 +100,7 @@ shopt -s histverify
 shopt -s checkwinsize
 
 # useful aliases
-alias grep='grep --color=auto -H'
+alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto -H'
 alias egrep='egrep --color=auto -H'
 alias ll='ls -alF'
@@ -169,4 +169,34 @@ PS1="\$(set_window_title)${debian_chroot:+($Purple$debian_chroot$NO_COLOR)}$Gree
 if [ -f ~/.bashrc_local ]; then
   . ~/.bashrc_local
 fi
+
+if [ ! -f ~/.pystartup ]; then
+  cat > ~/.pystartup << EOF
+# Add auto-completion and a stored history file of commands to your Python
+# interactive interpreter. Requires Python 2.0+, readline. Autocomplete is
+# bound to the Esc key by default (you can change it - see readline docs).
+#
+# Store the file in ~/.pystartup, and set an environment variable to point
+# to it:  "export PYTHONSTARTUP=~/.pystartup" in bash.
+
+import atexit
+import os
+import readline
+import rlcompleter
+
+historyPath = os.path.expanduser("~/.pyhistory")
+
+def save_history(historyPath=historyPath):
+    import readline
+    readline.write_history_file(historyPath)
+
+if os.path.exists(historyPath):
+    readline.read_history_file(historyPath)
+
+atexit.register(save_history)
+del os, atexit, readline, rlcompleter, save_history, historyPath
+EOF
+fi;
+
+export PYTHONSTARTUP=~/.pystartup
 

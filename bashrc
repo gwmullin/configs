@@ -59,7 +59,9 @@ function vim {
   if [ -x ~/my_vim.py ]; then
     ~/my_vim.py "$@"
   else
-    vim "$@"
+    # Need to resolve the absolute path, otherwise bash in OSX does infinite recursion.
+    VIM=$(which vim)
+    $VIM "$@"
   fi
   if [[ "$TMUX" != "" ]]; then
     tmux set-window-option automatic-rename "on" 1>/dev/null
@@ -100,15 +102,19 @@ shopt -s histverify
 shopt -s checkwinsize
 
 # useful aliases
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto -H'
-alias egrep='egrep --color=auto -H'
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-alias ls='ls --color=always'
-# I'm always doing this one
-alias Grep='grep --color=auto -H'
+if [[ "$TERM_PROGRAM" != "Apple_Terminal" ]]; then
+	alias grep='grep --color=auto'
+	alias fgrep='fgrep --color=auto -H'
+	alias egrep='egrep --color=auto -H'
+	alias ll='ls -alF'
+	alias la='ls -A'
+	alias l='ls -CF'
+	alias ls='ls --color=always'
+	# I'm always doing this one
+	alias Grep='grep --color=auto -H'
+else
+	alias ls='ls -G'
+fi
 
 # Include any bash aliases
 if [ -f ~/.bash_aliases ]; then
